@@ -373,6 +373,7 @@ $(function() {
 	  tmp = []
 	}
 
+	f.type = docurium.hotLink(f.type)
 	tmp.push(f)
 	had_comment = f.comments
       })
@@ -601,6 +602,9 @@ $(function() {
 
     // look for structs and link them
     hotLink: function(text) {
+      re = new RegExp('<a')
+      if (text.search(re) >= 0) return text
+
       types = this.get('data')['types']
       var version = this.get('version')
 
@@ -608,14 +612,14 @@ $(function() {
         type = types[i]
         typeName = type[0]
         typeData = type[1]
-        re = new RegExp(typeName + '\\s', 'gi');
+        re = new RegExp('\\b' + typeName + '\\b', 'gi');
         var link = $('<a>').attr('href', '#' + typeLink(typeName, version)).append(typeName)[0]
         text = text.replace(re, link.outerHTML + ' ')
       }
 
       var callbacks = this.get('data')['callbacks']
       _.each(callbacks, function(cb, typeName) {
-        re = new RegExp(typeName + '$', 'gi');
+        re = new RegExp('\\b' + typeName + '\\b', 'gi');
         var link = $('<a>').attr('href', '#' + functionLink('callback', typeName, version)).append(typeName)[0]
         text = text.replace(re, link.outerHTML + ' ')
       });

@@ -124,7 +124,7 @@
      <!-- The args table -->
      <%= argsTemplate({args: args}) %>
      <div class="returns">
-       <h3>returns</h3>
+       <h3>Returns</h3>
        <table class="funcTable">
 	 <tr>
 	   <td valign="top"><%= returns.link %></td>
@@ -135,7 +135,7 @@
      <div><%= data.comments %></div>
      <!-- function signature -->
      <div class="example">
-       <h3>signature</h3>
+       <h3>Signature</h3>
        <code class="params"><%= sig %></code>
      </div>
      <!-- function history -->
@@ -224,9 +224,6 @@
       <% if (type.data.description) { %>
       <p><%= type.data.description %></p>
       <% } %>
-      <% if (type.data.comments) { %>
-      <p><%= type.data.comments %></p>
-      <% } %>
 
       <table>
 	<% _.each(type.data.fields, function(field) { %>
@@ -240,6 +237,10 @@
 	  <% } %>
 	<% }) %>
       </table>
+
+      <% if (type.data.comments) { %>
+      <p><%= type.data.comments %></p>
+      <% } %>
       <%= uses %>
     </script>
     <!-- listing for a struct -->
@@ -248,26 +249,23 @@
       <p><%= type.value %></p>
 
       <% if (type.data.description) { %>
-      <p><%= type.data.description %></p>
-      <% } %>
-      <% if (type.data.comments) { %>
-      <p><%= type.data.comments %></p>
+      <h3 class="funcDesc"><%= type.data.description %></h3>
       <% } %>
 
-      <table>
+      <table class="funcTable">
 	<% _.each(type.data.fields, function(field) { %>
 	<tr>
-	  <td><code><%= field.type %></code></td>
-	  <td><code><%= field.name %></code></td>
-	<tr>
+	  <td valign="top"><%= field.type %></td>
+	  <td valign="top" class="var"><%= field.name %></td>
 	  <% if (field.comments) { %>
-	  <tr>
-	    <td colspan="2" class="type-comment"><%= field.comments %></td>
-	  </tr>
+	    <td class="comment"><%= field.comments %></td>
 	  <% } %>
 	<% }) %>
       </table>
 
+      <% if (type.data.comments) { %>
+      <p><%= type.data.comments %></p>
+      <% } %>
       <%= uses %>
     </script>
 

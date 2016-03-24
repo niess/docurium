@@ -254,7 +254,7 @@ $(function() {
       var ret = data['return']
       var returns = {link: docurium.hotLink(ret.type), comment: ret.comment}
       // function signature
-      var sig = docurium.hotLink(ret.type) + ' ' + fname + '(' + data['argline'] + ');'
+      var sig = ret.type + ' ' + fname + '(' + data['argline'] + ');'
       // version history
       if (!isCallback) {
 	var sigHist = docurium.get('signatures')[fname]
@@ -410,11 +410,17 @@ $(function() {
       var cdata = o.callbacks
       var version = o.version
 
+      this.gname = gname.charAt(0).toUpperCase() + gname.substring(1).toLowerCase()
       this.functions = _.map(group[1], function(name) {
 	var url = '#' + functionLink(gname, name, version)
 	var d = fdata[name]
-	return {name: name, url: url, returns: d['return']['type'], argline: d['argline'],
-		description: d['description'], comments: d['comments'], args: d['args']}
+	returns = docurium.hotLink(d['return']['type'])
+	args = _.map(d['args'], function(arg) {
+	  arg.type = this.hotLink(arg.type)
+	  return arg
+        }, docurium)
+	return {name: name, url: url, returns: returns, argline: d['argline'],
+		description: d['description'], comments: d['comments'], args: args}
       })
     },
 

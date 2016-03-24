@@ -411,7 +411,7 @@ class Docurium
 
     file_map = {}
 
-    md = Redcarpet::Markdown.new Redcarpet::Render::HTML, :no_intra_emphasis => true
+    md = Redcarpet::Markdown.new Redcarpet::Render::HTML, :no_intra_emphasis => true, :superscript => true
     recs.each do |r|
 
       # initialize filemap for this file
@@ -432,6 +432,7 @@ class Docurium
           if k == :description || k == :comments
             contents = md.render r[k]
           else
+            render!(r[k], md)
             contents = r[k]
           end
           data[t][r[:name]][k] = contents
@@ -499,6 +500,7 @@ class Docurium
           if k == :comments
             data[:types][r[:name]][k] = md.render r[k]
           else
+            render!(r[k], md)
             data[:types][r[:name]][k] = r[k]
           end
         end
@@ -513,6 +515,29 @@ class Docurium
     end
 
     data[:files] << file_map.values[0]
+  end
+
+  def render!(data, md)
+    # Walk the data and render Markdowns.
+    if data.instance_of? Hash
+      data.each do |key, value|
+        if [:comment, :comments, :description].include?(key)
+          # Render but drop any enclosing <p></p> tags.
+          if not value.nil?
+            value = md.render(value) unless value.nil?
+            if not value.nil?
+              value.gsub!("<p>", "")
+              value.gsub!("</p>", "")
+            end
+            data[key] = value
+          end
+        else
+          render!(value, md)
+        end
+      end
+    elsif data.respond_to?(:each)
+      data.each { |x| render!(x, md) }
+    end
   end
 
   def add_dir_to_index(index, prefix, dir)

@@ -120,13 +120,21 @@ table.methods tr td.methodName a {
 table.funcTable tr td {
   padding: 5px 10px;
   border-bottom: 1px solid #eee;
+  table-layout: fixed;
 }
-table.funcTable tr td.comment {
-  color: #999;
+table.funcTable tr td.type {
+  vertical-align: top;
+  overflow: hidden;
+  white-space: nowrap;
 }
 table.funcTable tr td.var {
+  vertical-align: top;
   font-weight: bold;
   color: #833;
+}
+table.funcTable tr td.comment {
+  text-align: justify;
+  color: #999;
 }
 
 code.params {
@@ -161,6 +169,13 @@ h3.funcDesc {
   color: #686;
   padding-bottom: 10px;
   margin: 0;
+}
+h3.groupDesc {
+  font-size: 1.0em;
+  font-weight: normal;
+  color: #686;
+  margin: 0;
+  text-align: left;
 }
 
 h1.funcTitle small {

@@ -95,7 +95,23 @@ class Docurium
               data[:functions][f][:examples] ||= {}
               data[:functions][f][:examples][file] ||= []
               data[:functions][f][:examples][file] << rel_path + '#' + name
-              "<a name=\"#{name}\" class=\"fnlink\" href=\"../../##{version}/group/#{fdata[:group]}/#{f}\">#{f}</a>#{extra}"
+              "<a name=\"#{name}\" class=\"fnlink\" href=\"../../index.html##{version}/group/#{fdata[:group]}/#{f}\">#{f}</a>#{extra}"
+            end
+          end
+
+          # look for types in the examples and link
+          data[:types].each do |t, tdata|
+            rf.gsub!(/#{t}([^\w])/) do |tmatch|
+              extra = $1
+              "<a href=\"../../index.html##{version}/type/#{t}\">#{t}</a>#{extra}"
+            end
+          end
+
+          # look for callbacks in the examples and link
+          data[:callbacks].each do |c, cdata|
+            rf.gsub!(/#{c}([^\w])/) do |cmatch|
+              extra = $1
+              "<a href=\"../../index.html##{version}/group/callback/#{c}\">#{c}</a>#{extra}"
             end
           end
 

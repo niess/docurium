@@ -16,34 +16,26 @@
     Jump To &hellip;
     <div id="jump_wrapper">
       <div id="jump_page">
-        <a class="source" href="../../#{{ version }}">API Docs</a>
+        <a class="source" href="../../index.html#{{ version }}">API Docs</a>
         {{#sources}}
           <a class="source" href="{{ url }}">{{ basename }}</a>
         {{/sources}}
       </div>
     </div>
   </div>
-  <table cellspacing=0 cellpadding=0>
-  <thead>
-    <tr>
-      <th class=docs><h1>{{ title }}</h1></th>
-      <th class=code></th>
-    </tr>
-  </thead>
-  <tbody>
-    {{#sections}}
-    <tr id='section-{{ section_id }}'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-{{ section_id }}">&#182;</a>
-        </div>
-        {{{ docs }}}
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>{{{ code }}}</pre></div>
-      </td>
-    </tr>
-    {{/sections}}
-  </table>
+  <div class=docs><h1>Example file {{ title }}</h1></div>
+  {{#sections}}
+  <div id='section-{{ section_id }}'>
+    <div class="docs">
+      <div class="pilwrap">
+        <a class="pilcrow" href="#section-{{ section_id }}">Section {{ section_id }}:</a>
+      </div>
+      {{{ docs }}}
+    </div>
+    <div class="code">
+      <div class='highlight'><pre>{{{ code }}}</pre></div>
+    </div>
+  </div>
+  {{/sections}}
 </div>
 </body>

@@ -193,9 +193,9 @@ class Docurium
         head_data = data
       end
 
-      output_index.add(:path => "#{version}.json", :oid => sha, :mode => 0100644)
+      add2index!(output_index, "#{version}.json", sha, 0100644)
       examples.each do |path, id|
-        output_index.add(:path => path, :oid => id, :mode => 0100644)
+        add2index!(output_index, path, id, 0100644)
       end
 
       if head_data
@@ -217,11 +217,11 @@ class Docurium
       :signatures => @sigs,
     }
     sha = @repo.write(project.to_json, :blob)
-    output_index.add(:path => "project.json", :oid => sha, :mode => 0100644)
+    add2index!(output_index, "project.json", sha, 0100644)
 
     css = File.read(File.expand_path(File.join(File.dirname(__FILE__), 'docurium', 'css.css')))
     sha = @repo.write(css, :blob)
-    output_index.add(:path => "ex/css.css", :oid => sha, :mode => 0100644)
+    add2index!(output_index, "ex/css.css", sha, 0100644)
 
     br = @options['branch']
     out "* writing to branch #{br}"
@@ -255,6 +255,12 @@ class Docurium
     elsif data.respond_to?(:each)
       data.each { |x| force_utf8(x) }
     end
+  end
+
+  def add2index!(index, path, sha, mode)
+    # Add an object to the repo index with optional out path.
+    path = File.join(@options['output'], path) if not @options['output'].nil?
+    index.add(:path => path, :oid => sha, :mode => mode)
   end
 
   def show_warnings(data)
@@ -566,7 +572,7 @@ class Docurium
         rel_path = name.gsub(prefix, '')
         content = File.read(name)
         sha = @repo.write(content, :blob)
-        index.add(:path => rel_path, :oid => sha, :mode => 0100644)
+        add2index!(index, rel_path, sha, 0100644)
       end
     end
   end

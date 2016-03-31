@@ -5,7 +5,8 @@ This is a fork of [libgit2/docurium](https://github.com/libgit2/docurium), a lig
 + Similar styles for structures and functions.
 + Markdown support for arguments and struct members comments.
 + Generalised referencing and hyperlinks.
-+ A modifed style sheet for examples and hyperlinks to types and callbacks as well. 
++ A modifed style sheet for examples and hyperlinks to types and callbacks as well.
++ The possibility to generate the docs in a subfolder instead of at the root of the project, for integration in another website.
 
 You can check how the modified template looks over [here](http://niess.github.io/pumas).
 

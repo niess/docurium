@@ -22,5 +22,3 @@ As for the base Docurium, but call explicitly the `bin/cm` script from this clon
 # License
 
 MIT, see LICENCE file
-
-

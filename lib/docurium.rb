@@ -80,6 +80,13 @@ class Docurium
             rocco_layout[:dirsup] = "../"*depth
           end
 
+          if @options['favicon'].nil?
+            rocco_layout[:favicon] = ""
+          else
+            favicon = "../"*(depth+1)+@options['favicon']
+            rocco_layout[:favicon] = "<link href=\"#{favicon}\" rel=\"icon\">"
+          end
+
           rocco_layout.version = version
           rf = rocco_layout.render
 
@@ -214,6 +221,7 @@ class Docurium
       :versions => versions.reverse,
       :github   => @options['github'],
       :name     => @options['name'],
+      :favicon  => @options['favicon'],
       :signatures => @sigs,
     }
     sha = @repo.write(project.to_json, :blob)

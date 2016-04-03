@@ -115,12 +115,21 @@ $(function() {
       this.listenTo(this.model, 'change:version', this.render)
       this.listenTo(this.model, 'change:name', this.renderName)
       this.title = $('#site-title')
+      this.logo_a = $('#site-logo')
+      this.logo_img = $('#img-logo')
     },
 
     render: function() {
       var version = this.model.get('version')
       this.$el.text(version)
       this.title.attr('href', '#' + version)
+      var logo = this.model.get('logo')
+      if (logo && logo[1]) {
+        this.logo_a.attr('href', logo[1])
+      }
+      else {
+	this.logo_a.attr('href', '#' + version)
+      }
       return this
     },
 
@@ -129,6 +138,10 @@ $(function() {
       var title = name + ' API'
       this.title.text(title)
       document.title = title
+      var logo = this.model.get('logo')
+      if (logo) {
+        this.logo_img.attr('src', logo[0])
+      }
       return this
     },
   })
@@ -582,7 +595,7 @@ $(function() {
 
     loadVersions: function() {
       $.getJSON("project.json").then(function(data) {
-        docurium.set({'versions': data.versions, 'github': data.github, 'signatures': data.signatures, 'name': data.name, 'favicon': data.favicon})
+        docurium.set({'versions': data.versions, 'github': data.github, 'signatures': data.signatures, 'name': data.name, 'favicon': data.favicon, 'logo': data.logo})
         docurium.setVersion()
       })
     },

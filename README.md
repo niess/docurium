@@ -7,6 +7,8 @@ This is a fork of [libgit2/docurium](https://github.com/libgit2/docurium), a lig
 + Generalised referencing and hyperlinks.
 + A modifed style sheet for examples and hyperlinks to types and callbacks as well.
 + The possibility to generate the docs in a subfolder instead of at the root of the project, for integration in another website.
++ An optional favicon for the docs pages and examples sub pages. Define {.., "favicon" : "path", ...} in api.docurium to enable.
++ An optional clickable logo image for the main doc page. Define {.., "logo" : ["src", "href"], ...} in api.docurium to enable.
 
 You can check how the modified template looks over [here](http://niess.github.io/pumas).
 

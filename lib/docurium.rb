@@ -222,6 +222,7 @@ class Docurium
       :github   => @options['github'],
       :name     => @options['name'],
       :favicon  => @options['favicon'],
+      :logo     => @options['logo'],
       :signatures => @sigs,
     }
     sha = @repo.write(project.to_json, :blob)

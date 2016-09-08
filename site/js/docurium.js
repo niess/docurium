@@ -99,7 +99,7 @@ $(function() {
           $('#types-list', menu).append(opaquesList)
       }
       if (data.callbacks.length) {
-          var callbacksList = this.typeTemplate({title: 'Callbacks', elements: data.callbacks})
+          var callbacksList = this.typeTemplate({title: 'Function Pointers', elements: data.callbacks})
           $('#types-list', menu).append(callbacksList)
       }
 

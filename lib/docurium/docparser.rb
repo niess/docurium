@@ -87,13 +87,16 @@ class Docurium
         :underlying_type => cursor.underlying_type.spelling,
         :tdef => :typedef,
       }
-
-      if not child
+      if cursor.typedef_type.kind == :type_function_proto
+        kind = :cursor_parm_decl
+      elsif child
+        kind = child.kind
+      else
         return rec
       end
 
       #puts "have typedef #{child.kind}, #{cursor.extent.start.line}"
-      case child.kind
+      case kind
       when :cursor_type_ref
         #puts "pure typedef, #{cursor.spelling}"
         if child.type.kind == :type_record

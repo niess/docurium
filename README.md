@@ -10,7 +10,7 @@ This is a fork of [libgit2/docurium](https://github.com/libgit2/docurium), a lig
 + An optional favicon for the docs pages and examples sub pages. Define {.., "favicon" : "path", ...} in api.docurium to enable.
 + An optional clickable logo image for the main doc page. Define {.., "logo" : ["src", "href"], ...} in api.docurium to enable.
 
-You can check how the modified template looks over [here](http://niess.github.io/pumas).
+You can check how the modified template looks over [here](http://niess.github.io/turtle/docs).
 
 # Installation
 

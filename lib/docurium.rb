@@ -23,7 +23,12 @@ class Docurium
     raise "You need to specify a config file" if !config_file
     raise "You need to specify a valid config file" if !valid_config(config_file)
     @sigs = {}
-    @repo = repo || Rugged::Repository.discover('.')
+    @repo_in = repo || Rugged::Repository.discover('.')
+    if @options['output-repository']
+      @repo_out = Rugged::Repository.discover(@options['output-repository'])
+    else
+      @repo_out = @repo_in
+    end
   end
 
   def init_data(version = 'HEAD')
@@ -62,7 +67,7 @@ class Docurium
           # highlight, roccoize and link
           rocco = Rocco.new(file, files, {:language => 'c'}) do
             ientry = index[file]
-            blob = @repo.lookup(ientry[:oid])
+            blob = @repo_in.lookup(ientry[:oid])
             blob.content
           end
 
@@ -123,7 +128,7 @@ class Docurium
           end
 
           # write example to the repo
-          sha = @repo.write(rf, :blob)
+          sha = @repo_out.write(rf, :blob)
           examples << [rel_path, sha]
 
           data[:examples] ||= []
@@ -143,7 +148,11 @@ class Docurium
   end
 
   def generate_docs
-    output_index = Rugged::Index.new
+    output_index = @repo_out.index # Rugged::Index.new
+    br = @options['output-branch']
+    refname = "refs/heads/#{br}"
+    ref = @repo_out.references[refname]
+    output_index.read_tree(ref.target.tree)
     write_site(output_index)
     @tf = File.expand_path(File.join(File.dirname(__FILE__), 'docurium', 'layout.mustache'))
     versions = get_versions
@@ -191,7 +200,7 @@ class Docurium
       # There's still some work we need to do serially
       tally_sigs!(version, data)
       force_utf8(data)
-      sha = @repo.write(data.to_json, :blob)
+      sha = @repo_out.write(data.to_json, :blob)
 
       print "Generating documentation [#{i}/#{nversions}]\r"
 
@@ -225,28 +234,26 @@ class Docurium
       :logo     => @options['logo'],
       :signatures => @sigs,
     }
-    sha = @repo.write(project.to_json, :blob)
+    sha = @repo_out.write(project.to_json, :blob)
     add2index!(output_index, "project.json", sha, 0100644)
 
     css = File.read(File.expand_path(File.join(File.dirname(__FILE__), 'docurium', 'css.css')))
-    sha = @repo.write(css, :blob)
+    sha = @repo_out.write(css, :blob)
     add2index!(output_index, "ex/css.css", sha, 0100644)
 
-    br = @options['branch']
     out "* writing to branch #{br}"
-    refname = "refs/heads/#{br}"
-    tsha = output_index.write_tree(@repo)
+    output_index.write
+    tsha = output_index.write_tree(@repo_out)
     puts "\twrote tree   #{tsha}"
-    ref = @repo.references[refname]
-    user = { :name => @repo.config['user.name'], :email => @repo.config['user.email'], :time => Time.now }
+    user = { :name => @repo_out.config['user.name'], :email => @repo_out.config['user.email'], :time => Time.now }
     options = {}
     options[:tree] = tsha
     options[:author] = user
     options[:committer] = user
-    options[:message] = 'generated docs'
+    options[:message] = 'Update the docs'
     options[:parents] = ref ? [ref.target] : []
     options[:update_ref] = refname
-    csha = Rugged::Commit.create(@repo, options)
+    csha = Rugged::Commit.create(@repo_out, options)
     puts "\twrote commit #{csha}"
     puts "\tupdated #{br}"
   end
@@ -268,7 +275,7 @@ class Docurium
 
   def add2index!(index, path, sha, mode)
     # Add an object to the repo index with optional out path.
-    path = File.join(@options['output'], path) if not @options['output'].nil?
+    path = File.join(@options['output-path'], path) if not @options['output-path'].nil?
     index.add(:path => path, :oid => sha, :mode => mode)
   end
 
@@ -299,7 +306,7 @@ class Docurium
   end
 
   def get_versions
-    releases = @repo.tags
+    releases = @repo_in.tags
                .map { |tag| tag.name.gsub(%r(^refs/tags/), '') }
                .delete_if { |tagname| tagname.match(%r(-rc\d*$)) }
     VersionSorter.sort(releases)
@@ -309,7 +316,7 @@ class Docurium
     headers = index.map { |e| e[:path] }.grep(/\.h$/)
 
     files = headers.map do |file|
-      [file, @repo.lookup(index[file][:oid]).content]
+      [file, @repo_in.lookup(index[file][:oid]).content]
     end
 
     data = init_data(version)
@@ -354,9 +361,9 @@ class Docurium
   def find_subtree(version, path)
     tree = nil
     if version == 'HEAD'
-      tree = @repo.head.target.tree
+      tree = @repo_in.head.target.tree
     else
-      trg = @repo.references["refs/tags/#{version}"].target
+      trg = @repo_in.references["refs/tags/#{version}"].target
       if(trg.kind_of? Rugged::Tag::Annotation)
         trg = trg.target
       end
@@ -366,7 +373,7 @@ class Docurium
 
     begin
       tree_entry = tree.path(path)
-      @repo.lookup(tree_entry[:oid])
+      @repo_in.lookup(tree_entry[:oid])
     rescue Rugged::TreeError
       nil
     end
@@ -383,7 +390,7 @@ class Docurium
     @project_dir = File.dirname(fpath)
     @config_file = File.basename(fpath)
     @options = JSON.parse(File.read(fpath))
-    !!@options['branch']
+    !!@options['output-branch']
   end
 
   def group_functions!(data)
@@ -580,7 +587,7 @@ class Docurium
       else
         rel_path = name.gsub(prefix, '')
         content = File.read(name)
-        sha = @repo.write(content, :blob)
+        sha = @repo_out.write(content, :blob)
         add2index!(index, rel_path, sha, 0100644)
       end
     end
